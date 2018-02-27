@@ -50,5 +50,28 @@ public class CTRLMatriz {
         this.listMatriz.add(m);
         return cadena;
     }
+    
+    /**
+     * Carga matriz a partir de un archivo
+     * @param direccion Ubicación del archivo
+     * @return  Matriz entero
+     */
+    public int[][] cargarMatriz(String direccion) {
+        Matriz objMatriz =  new Matriz();
+        return objMatriz.cargarMatriz(direccion);
+    }
 
+    
+    public boolean llenarMatrizOrdenada(int[][] matriz){
+        int contador = 1;
+        for(int i = 0; i < matriz.length;i++){
+            for(int j = 0; j < matriz.length;j++){
+                matriz[i][j] = contador;
+                contador ++;
+            }
+        }
+        matriz[matriz.length-1][matriz[0].length-1] = 0;
+        return true;
+    }
+    
 }

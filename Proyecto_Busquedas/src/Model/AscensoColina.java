@@ -25,39 +25,71 @@ public class AscensoColina extends Busqueda {
     public Nodo metodoBusqueda() {
         this.abierto = new ArrayList();
         this.cerrado = new ArrayList();
-        Nodo inicial = this.addNodo(this.estadoInicial);
-        Nodo meta = new Nodo(this.estadoFinal, this.actual);
+        Nodo inicial = this.addNodo(this.estadoInicial); inicial.encontrarXYVacion();
+        Nodo meta = new Nodo(this.estadoFinal, null);
         this.abierto.add(inicial);
         while (!this.abierto.isEmpty() && !estaEnAbierto(meta)) {
             Nodo aux = this.abierto.remove(0);
             this.actual = aux;
             if (!this.cerrado.contains(aux)) {
-                //expandir sucesores
-                //calcular distancia heuristica
                 this.cerrado.add(aux);
-                if (this.existeSucesor()) {
-                    //ordenar sucesores
-                    //agregarlos al inicio de abierto
-                    this.addSucesores();
+                ArrayList<Nodo> NodosSucesores = this.ObtenerSucesores(aux,this.cerrado, this.abierto);
+                CalcularHeuristica(NodosSucesores);
+                if (!NodosSucesores.isEmpty() && !soNodoMeta(NodosSucesores,meta)) {
+                    ordenarLista(NodosSucesores);
+                    for(int i=NodosSucesores.size()-1; i >= 0;i--){
+                        this.abierto.add(0,NodosSucesores.get(i));
+                    }
                 }
             }
         }
-        if (this.actual.getEstado() == meta.getEstado()) {
-            return this.actual;
-        } else {
+        System.out.println(this.actual.getIdUnicoNodo());
+        if (!meta.equals(this.actual)) {
             return null;
+        } else {
+            return this.actual;
         }
     }
-
-    public void ordenarLista() {
-        Collections.sort(this.sucesores);
+    
+    /**
+     * Calculo heuristico
+     * @param sucesores 
+     */
+    private void CalcularHeuristica(ArrayList<Nodo> sucesores){
+        for(int i=0; i < sucesores.size();i++){
+            sucesores.get(i).setInfoNodo(this.valorHeuristico(sucesores.get(i).getEstado()));;
+        }
+    }
+    
+    /**
+     * Calculo heuristico
+     * @param sucesores 
+     */
+    private boolean soNodoMeta(ArrayList<Nodo> sucesores,Nodo objMeta){
+        for(int i=0; i < sucesores.size();i++){
+            if(sucesores.get(i).equals(objMeta)){
+                this.abierto.add(0, sucesores.get(i));
+                this.actual = sucesores.get(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void ordenarLista(ArrayList<Nodo> sucesores) {
+        Collections.sort(sucesores);
     }
 
+    /**
+     * Metodo encargado de validar que no exista el nodo final en los nodos abiertos
+     * @param nodo nodo meta
+     * @return retorna valor boolean
+     */
     @Override
     public boolean estaEnAbierto(Nodo nodo) {
         boolean ban = false;
         for (Nodo k : this.abierto) {
-            if (k.getInfoNodo() == nodo.getInfoNodo()) {
+            if (k.equals(nodo)) {
                 ban = true;
             }
         }

@@ -10,36 +10,44 @@ import java.util.ArrayList;
  */
 public class CTRLBusqueda {
 
-    private CTRLFabrica cTRLFabrica;
-    private CTRLNodo cTRLNodo;
-    private ArrayList<Busqueda> busquedas;
 
-    public CTRLBusqueda() {
-        this.busquedas = new ArrayList();
-        this.cTRLFabrica = new CTRLFabrica();
-        this.cTRLNodo = new CTRLNodo();
+    private Busqueda objBusqueda;
+
+    /**
+     * Constructor
+     * @param objBusqueda 
+     */
+    public CTRLBusqueda(Busqueda objBusqueda){
+        this.objBusqueda = objBusqueda;
     }
 
-    public Busqueda nuevaBusqueda(String bs) {
-        return this.cTRLFabrica.crearBusqueda(bs);
+    /**
+     * Metodo encargado de inicial la busqueda
+     * @return 
+     */
+    public Nodo iniciarBusqueda(){
+        Nodo objNodoSalida =  new Nodo();
+        objNodoSalida = this.objBusqueda.metodoBusqueda();
+        return objNodoSalida;
     }
-
-    /*
-    public String procesarBusquda(String bs, int[][] matriz, int[][] matriz2, int np) {
-        Busqueda busqueda = this.nuevaBusqueda(bs);
-        //busqueda.setProfundidad(np); 
-        busqueda.setEstadoInicial(matriz);
-        busqueda.setEstadoFinal(matriz2);
-        Nodo nd = busqueda.metodoBusqueda();
-
-        this.cTRLNodo.insertarNodo(nd);
-        this.insertarBusqueda(busqueda);
-        return nd == null ? "" : this.cTRLNodo.recorrerPadres(nd);
-    }
-
-    public void insertarBusqueda(Busqueda busqueda) {
-        this.busquedas.add(busqueda);
-    }
-    */
+   
+    /**
+     * Metodo encargado de generar pasos del puzzle
+     * @param objNodoFinal Nodo final
+     * @param txtSalidaDatos JTextArea en from usuario
+     * @return 
+     */
+    public boolean generarPasosDelPuzzle(Nodo objNodoFinal, javax.swing.JTextArea txtSalidaDatos){
+        Nodo Padre = objNodoFinal;
+        int contadorPasos = 1;
+        String cadenaSalida = "";
+        while(Padre != null){
+            cadenaSalida = "Paso " + Integer.toString(contadorPasos) + ": \n\t\t" +  Padre.getIdUnicoNodo().replace("-:", "\n\t\t") + "\n" + cadenaSalida;
+            Padre = Padre.getPadre();
+            contadorPasos ++;
+        }
+        txtSalidaDatos.setText(cadenaSalida);
+        return true;
+    } 
 
 }

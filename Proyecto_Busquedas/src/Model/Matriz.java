@@ -111,23 +111,31 @@ public class Matriz {
 //    }
     public int[][] cargarMatriz(String direccion) {
         File matrizFile = new File(direccion);
-        this.matriz = new int[20][20];
-        int i = 0, j = 0;
+        ArrayList<int[]> lstFilas =  new ArrayList<>();
         try {
+            int[][] matriz = null;
             String text;
             try (FileReader fr = new FileReader(matrizFile)) {
                 BufferedReader br = new BufferedReader(fr);
                 text = "";
                 while ((text = br.readLine()) != null) {
-                    StringTokenizer tokens = new StringTokenizer(text, " ");
-                    while (tokens.hasMoreTokens()) {
-                        this.matriz[i][j] = Integer.parseInt(tokens.nextToken());
-                        j++;
+                    int[] filaNumeros = null;
+                    String[] partes = text.split(" ");
+                    if (filaNumeros == null){
+                        filaNumeros =   new int[partes.length];
                     }
-                    i++;
+                    for(int j = 0; j < partes.length; j++){
+                        filaNumeros[j] = Integer.parseInt(partes[j]);
+                    }
+                    lstFilas.add(filaNumeros);
+                }
+                
+                matriz =  new int[lstFilas.size()][lstFilas.get(0).length];
+                for(int i = 0; i < lstFilas.size();i++){
+                    System.arraycopy(lstFilas.get(i), 0, matriz[i], 0, lstFilas.get(i).length);
                 }
             }
-            return this.matriz;
+            return matriz;                
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
             return null;
