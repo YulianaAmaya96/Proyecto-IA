@@ -1,8 +1,6 @@
 package Model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  *
@@ -10,9 +8,10 @@ import java.util.Queue;
  */
 public class BusquedaAmplitud extends Busqueda {
 
-    private Queue<Nodo> abierto;
+    private ArrayList<Nodo> abierto;
 
     public BusquedaAmplitud() {
+        super();
         this.actual = null;
     }
 
@@ -23,40 +22,55 @@ public class BusquedaAmplitud extends Busqueda {
 
     @Override
     public Nodo metodoBusqueda() {
-        this.abierto = new LinkedList();
+        this.abierto = new ArrayList();
         this.cerrado = new ArrayList();
-        Nodo inicial;
-        inicial = this.addNodo(this.estadoInicial);
-        Nodo meta = new Nodo(this.estadoFinal, this.actual);
+        Nodo inicial = this.addNodo(this.estadoInicial);
+        inicial.encontrarXYVacion();
+        Nodo meta = new Nodo(this.estadoFinal, null);
         this.abierto.add(inicial);
         while (!this.abierto.isEmpty() && !estaEnAbierto(meta)) {
-            Nodo aux = this.abierto.poll();
+            Nodo aux = this.abierto.remove(0);
             this.actual = aux;
             if (!this.cerrado.contains(aux)) {
                 this.cerrado.add(aux);
-                if (this.existeSucesor()) {
-                    this.addSucesores();
+                ArrayList<Nodo> NodosSucesores = this.ObtenerSucesores(aux, this.cerrado, this.abierto);
+                if (!NodosSucesores.isEmpty() && !soNodoMeta(NodosSucesores, meta)) {
+                    NodosSucesores.stream().forEach((NodosSucesore) -> {
+                        this.abierto.add(NodosSucesore);
+                    });
                 }
             }
         }
-        if (this.actual.getEstado() == meta.getEstado()) {
-            return this.actual;
-        } else {
+        System.out.println(this.actual.getIdUnicoNodo());
+        if (!meta.equals(this.actual)) {
             return null;
+        } else {
+            return this.actual;
         }
     }
 
-    @Override
-    public int calcularInfo(Nodo ap) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    /**
+     * Calculo heuristico
+     *
+     * @param sucesores
+     */
+    private boolean soNodoMeta(ArrayList<Nodo> sucesores, Nodo objMeta) {
+        for (Nodo sucesore : sucesores) {
+            if (sucesore.equals(objMeta)) {
+                this.abierto.add(0, sucesore);
+                this.actual = sucesore;
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean estaEnAbierto(Nodo nodo) {
         boolean ban = false;
         for (Nodo k : this.abierto) {
-            if(k.getInfoNodo() == nodo.getInfoNodo()){
-                ban = true; 
+            if (k.equals(nodo)) {
+                ban = true;
             }
         }
         return ban;

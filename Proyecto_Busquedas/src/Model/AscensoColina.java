@@ -25,7 +25,8 @@ public class AscensoColina extends Busqueda {
     public Nodo metodoBusqueda() {
         this.abierto = new ArrayList();
         this.cerrado = new ArrayList();
-        Nodo inicial = this.addNodo(this.estadoInicial); inicial.encontrarXYVacion();
+        Nodo inicial = this.addNodo(this.estadoInicial); 
+        inicial.encontrarXYVacion();
         Nodo meta = new Nodo(this.estadoFinal, null);
         this.abierto.add(inicial);
         while (!this.abierto.isEmpty() && !estaEnAbierto(meta)) {
@@ -47,6 +48,11 @@ public class AscensoColina extends Busqueda {
         if (!meta.equals(this.actual)) {
             return null;
         } else {
+            Nodo temp = this.actual; 
+            while(temp!=null){
+                System.err.println(temp.getIdUnicoNodo());
+                temp = temp.getPadre(); 
+            }
             return this.actual;
         }
     }
@@ -56,9 +62,9 @@ public class AscensoColina extends Busqueda {
      * @param sucesores 
      */
     private void CalcularHeuristica(ArrayList<Nodo> sucesores){
-        for(int i=0; i < sucesores.size();i++){
-            sucesores.get(i).setInfoNodo(this.valorHeuristico(sucesores.get(i).getEstado()));;
-        }
+        sucesores.stream().forEach((sucesore) -> {
+            sucesore.setInfoNodo(this.valorHeuristico(sucesore.getEstado()));
+        });
     }
     
     /**
@@ -66,10 +72,10 @@ public class AscensoColina extends Busqueda {
      * @param sucesores 
      */
     private boolean soNodoMeta(ArrayList<Nodo> sucesores,Nodo objMeta){
-        for(int i=0; i < sucesores.size();i++){
-            if(sucesores.get(i).equals(objMeta)){
-                this.abierto.add(0, sucesores.get(i));
-                this.actual = sucesores.get(i);
+        for (Nodo sucesore : sucesores) {
+            if (sucesore.equals(objMeta)) {
+                this.abierto.add(0, sucesore);
+                this.actual = sucesore;
                 return true;
             }
         }
@@ -94,11 +100,6 @@ public class AscensoColina extends Busqueda {
             }
         }
         return ban;
-    }
-
-    @Override
-    public int calcularInfo(Nodo ap) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

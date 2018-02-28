@@ -1,7 +1,7 @@
 package Model;
 
 import java.util.ArrayList;
-import java.util.Stack;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -10,145 +10,94 @@ import java.util.Stack;
 public class BusquedaProfundidad extends Busqueda {
 
     private int profundidad;
-    protected Stack<Nodo> abierto;
+    protected ArrayList<Nodo> abierto;
 
     public BusquedaProfundidad() {
         super();
         this.actual = null;
+        this.profundidad = Integer.parseInt(JOptionPane.showInputDialog("Digite profundidad"));
     }
 
-    public BusquedaProfundidad(int profundidad, int[][] estadoInicial, int[][] estadoFinal) {
+    public BusquedaProfundidad(int[][] estadoInicial, int[][] estadoFinal) {
         super(estadoInicial, estadoFinal);
         this.actual = null;
-        this.profundidad = profundidad;
-    }
-
-    public void setProfundidad(int profundidad) {
-        this.profundidad = profundidad;
+        this.profundidad = Integer.parseInt(JOptionPane.showInputDialog("Digite profundidad"));
     }
 
     @Override
     public Nodo metodoBusqueda() {
-        this.abierto = new Stack();
+        this.abierto = new ArrayList();
         this.cerrado = new ArrayList();
-        Nodo inicial = this.addNodo(this.estadoInicial);
-        inicial.setInfoNodo(0);
-        Nodo meta = new Nodo(this.estadoFinal, this.actual);
-        this.abierto.push(inicial);
+        Nodo inicial = this.addNodo(this.estadoInicial); 
+        inicial.encontrarXYVacion();
+        Nodo meta = new Nodo(this.estadoFinal, null);
+        this.abierto.add(inicial);
         while (!this.abierto.isEmpty() && !estaEnAbierto(meta)) {
-            Nodo aux = this.abierto.pop();
+            Nodo aux = this.abierto.remove(0);
             this.actual = aux;
-            if (!this.cerrado.contains(aux) && aux.getInfoNodo() <= this.profundidad) {
+            if (!this.cerrado.contains(aux) &&calcularProfundidad(aux) < this.profundidad) {
                 this.cerrado.add(aux);
-                ArrayList<Nodo> expandido = expandirNodos(aux);
-                if (!expandido.isEmpty()) {
-                    expandido.stream().forEach((objNodo) -> {
-                        this.abierto.add(objNodo);
-                    });
+                ArrayList<Nodo> NodosSucesores = this.ObtenerSucesores(aux,this.cerrado, this.abierto);
+                if (!NodosSucesores.isEmpty() && !soNodoMeta(NodosSucesores,meta)) {
+                    for(int i=NodosSucesores.size()-1; i >= 0;i--){
+                        this.abierto.add(0,NodosSucesores.get(i));
+                    }
                 }
             }
         }
-        if (actual.getEstado() == meta.getEstado()) {
-            return actual;
-        } else {
+        System.out.println(this.actual.getIdUnicoNodo());
+        if (!meta.equals(this.actual)) {
             return null;
+        } else {
+            Nodo temp = this.actual; 
+            while(temp!=null){
+                System.err.println(temp.getIdUnicoNodo());
+                temp = temp.getPadre(); 
+            }
+            return this.actual;
         }
     }
-
-    @Override
-    public int calcularInfo(Nodo aux) {
-        int n = 0;
-        while (aux != null) {
-            n++;
-            aux = aux.getPadre();
+    
+    /**
+     * Calculo heuristico
+     * @param sucesores 
+     */
+    private boolean soNodoMeta(ArrayList<Nodo> sucesores,Nodo objMeta){
+        for (Nodo sucesore : sucesores) {
+            if (sucesore.equals(objMeta)) {
+                this.abierto.add(0, sucesore);
+                this.actual = sucesore;
+                return true;
+            }
         }
-        return n;
+        return false;
     }
 
+    /**
+     * Metodo encargado de validar que no exista el nodo final en los nodos abiertos
+     * @param nodo nodo meta
+     * @return retorna valor boolean
+     */
     @Override
     public boolean estaEnAbierto(Nodo nodo) {
         boolean ban = false;
         for (Nodo k : this.abierto) {
-            if (k.getInfoNodo() == nodo.getInfoNodo()) {
+            if (k.equals(nodo)) {
                 ban = true;
             }
         }
         return ban;
     }
 
-    //--------------------------------------------------------------------------
-    public boolean existePadreNodo(Nodo objActual, char dato) {
-        boolean ban = false;
-//        Nodo objTemporal = objActual;
-//        while (objTemporal != null && ban == false) {
-//            ban = objTemporal.getDatos() == dato;
-//            objTemporal = objTemporal.getPadre();
-//        }
-        return ban;
-    }
 
-    public void addSucesores(Nodo objActual, Nodo Meta) {
-//        int p = this.getP(objActual);
-//        if (p >= 0) {
-//            Nodo objTemporal = objActual;
-//            int n = this.matriz[p].length;
-//            int columna = p;
-//            while (columna != -1) {
-//
-//                char d = (char) ((char) 'A' + (char) columna);
-//
-//                boolean existe = false;
-//                for (int i = columna + 1; i < n && existe == false; i++) {
-//
-//                    char c = (char) ((char) 'A' + (char) i);
-//                    if (this.matriz[columna][i] == 1 && !existePadreNodo(objTemporal, c)) {
-//                        columna = i;
-//                        objTemporal = new Nodo(c, objTemporal, objTemporal.getNivelNodo() + 1);
-//                        this.abierto.push(objTemporal);
-//                        existe = true;
-//                    }
-//
-//                }
-//                if (existe == false) {
-//                    columna = -1;
-//                }
-//
-//            }
-//            if (objTemporal != objActual) {
-//                if (objTemporal.getEstado()== Meta.getEstado()) {
-//                    this.cerrado.add(objTemporal);
-//                }
-//            }
-//        }
+    public int calcularProfundidad(Nodo aux) {
+        Nodo temp = this.actual;
+        int n = 0;
+        while (temp != null) {
+            System.err.println(temp.getIdUnicoNodo());
+            temp = temp.getPadre();
+            n++; 
+        }
+        return n;
     }
-
-    public int getNivel(Nodo ap) {
-//        int n = this.estado.length, k = -1;
-//        for (int i = 0; i < n; i++) {
-//            char c = (char) ((char) 'A' + (char) i);
-//            if (ap.dato == c) {
-//                k = i;
-//            }
-//        }
-//        return k;
-        return 0;
-    }
-
-    public ArrayList<Nodo> expandirNodos(Nodo objNodo) {
-        //calcular nivel del nodo nuevo
-        ArrayList<Nodo> nodosExpandidos = new ArrayList<>();
-//        int p = this.getP(objNodo);
-//        for (int i = 0; i < this.matriz[p].length; i++) {
-//            char c = (char) ((char) 'A' + (char) i);
-//            if (this.matriz[p][i] == 1 && !existePadreNodo(objNodo, c)) {
-//                nodosExpandidos.add(new Nodo(c, objNodo, objNodo.getprofundidad() + 1));
-//            }
-//        }
-        return nodosExpandidos;
-    }
-
-    public boolean conNodoMeta(ArrayList<Nodo> NodoExpandidos, Nodo Meta) {
-        return NodoExpandidos.stream().anyMatch((objNodo) -> (objNodo.getEstado() == Meta.getEstado()));
-    }
-
 }

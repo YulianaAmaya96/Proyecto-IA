@@ -53,10 +53,12 @@ public class RamifyAcota_Sub extends Busqueda {
      * @param sucesores 
      */
     private void CalcularHeuristica(ArrayList<Nodo> sucesores){
-        for(int i=0; i < sucesores.size();i++){
-            sucesores.get(i).setValor(this.valorNodo(sucesores.get(i).getEstado()) + sucesores.get(i).getPadre().getValor());
-            sucesores.get(i).setInfoNodo(this.valorHeuristico(sucesores.get(i).getEstado()) + sucesores.get(i).getValor());
-        }
+        sucesores.stream().map((sucesore) -> {
+            sucesore.setValor(this.valorNodo(sucesore.getEstado()) + sucesore.getPadre().getValor());
+            return sucesore;
+        }).forEach((sucesore) -> {
+            sucesore.setInfoNodo(this.valorHeuristico(sucesore.getEstado()) + sucesore.getValor());
+        });
     }
     
     /**
@@ -64,10 +66,10 @@ public class RamifyAcota_Sub extends Busqueda {
      * @param sucesores 
      */
     private boolean soNodoMeta(ArrayList<Nodo> sucesores,Nodo objMeta){
-        for(int i=0; i < sucesores.size();i++){
-            if(sucesores.get(i).equals(objMeta)){
-                this.abierto.add(0, sucesores.get(i));
-                this.actual = sucesores.get(i);
+        for (Nodo sucesore : sucesores) {
+            if (sucesore.equals(objMeta)) {
+                this.abierto.add(0, sucesore);
+                this.actual = sucesore;
                 return true;
             }
         }
@@ -94,8 +96,4 @@ public class RamifyAcota_Sub extends Busqueda {
         return ban;
     }
 
-    @Override
-    public int calcularInfo(Nodo ap) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

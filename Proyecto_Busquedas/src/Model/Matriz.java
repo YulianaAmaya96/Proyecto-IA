@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import vista.vBusquedaPuzzle;
 
 public class Matriz {
 
@@ -23,160 +25,91 @@ public class Matriz {
         this.matriz = matriz;
     }
 
-    public String grafoAleatorio(int n) throws IOException {
-        String direccion = "E:\\BusquedaExhaustiva\\BusquedaExhaustiva\\src\\texto\\Matriz_A.txt";
-        File numeros = new File(direccion);
-        try (BufferedWriter bwNumeros = new BufferedWriter(new FileWriter(numeros))) {
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    bwNumeros.write(this.generarBit() + " ");
-                }
-                bwNumeros.newLine();
-            }
-        }
-        return this.cargarGrafo(direccion);
-    }
-
-    private int generarBit() {
-        Random rnd = new Random();
-        int temp = (int) (rnd.nextDouble() * 10 + 1);
-        if (temp < 5) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-
-    public String cargarGrafo(String direccion) {
-        File matrizFile = new File(direccion);
-        try {
-            String text;
-            try (FileReader fr = new FileReader(matrizFile)) {
-                BufferedReader br = new BufferedReader(fr);
-                String aux;
-                text = "";
-                while ((aux = br.readLine()) != null) {
-                    text += aux + "\n";
-                }
-            }
-            return text;
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (IOException ex) {
-            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
-    public void llenarDatos(int[][] A, String ubicacion) {
-        File archivo = new File(ubicacion);
-        try {
-            FileReader fr = new FileReader(archivo);
-            BufferedReader br = new BufferedReader(fr);
-            String linea = br.readLine();
-            for (int i = 0; i < A.length; i++) {
-                StringTokenizer numero = new StringTokenizer(linea, " ");
-                for (int j = 0; j < A.length; j++) {
-                    if (numero.hasMoreTokens()) {
-                        int k = Integer.parseInt(numero.nextToken());
-                        A[i][j] = k;
-                    } else {
-                        A[i][j] = 0;
-                    }
-                }
-                linea = br.readLine();
-            }
-            fr.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-//    public int[][] cargarMatriz(String cadena) {
-//        this.matriz = new int[7][7]; 
-//        int i = 0, j = 0;
-//        StringTokenizer linea = new StringTokenizer(cadena, "\n");
-//        while (linea.hasMoreTokens()) {
-//            StringTokenizer caracter = new StringTokenizer(linea.nextToken(), " ");
-//            while (caracter.hasMoreTokens()) {
-//                this.matriz[i][j] = Integer.parseInt(caracter.nextToken());
-//                j++;
+//    public String grafoAleatorio(int n) throws IOException {
+//        String direccion = "";
+//        File numeros = new File(direccion);
+//        try (BufferedWriter bwNumeros = new BufferedWriter(new FileWriter(numeros))) {
+//            for (int i = 0; i < n; i++) {
+//                for (int j = 0; j < n; j++) {
+//                    bwNumeros.write(this.generarNumero() + " ");
+//                }
+//                bwNumeros.newLine();
 //            }
-//            i++;
 //        }
-//        return this.matriz;
+//        return this.cargarGrafo(direccion);
+//    }
+//
+//    private int generarNumero() {
+//        Random rnd = new Random();
+//        int temp = (int) (rnd.nextDouble() * 10 + 1);
+//        if (temp < 5) {
+//            return 0;
+//        } else {
+//            return 1;
+//        }
+//    }
+//
+//    public String cargarGrafo(String direccion) {
+//        File matrizFile = new File(direccion);
+//        try {
+//            String text;
+//            try (FileReader fr = new FileReader(matrizFile)) {
+//                BufferedReader br = new BufferedReader(fr);
+//                String aux;
+//                text = "";
+//                while ((aux = br.readLine()) != null) {
+//                    text += aux + "\n";
+//                }
+//            }
+//            return text;
+//        } catch (FileNotFoundException ex) {
+//            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
+//            return null;
+//        } catch (IOException ex) {
+//            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
+//            return null;
+//        }
 //    }
     public int[][] cargarMatriz(String direccion) {
         File matrizFile = new File(direccion);
-        ArrayList<int[]> lstFilas =  new ArrayList<>();
-        try {
-            int[][] matriz = null;
-            String text;
-            try (FileReader fr = new FileReader(matrizFile)) {
+        ArrayList<int[]> lstFilas = new ArrayList();
+        int[][] objMatriz1;
+        if (matrizFile != null) {
+            try {
+                FileReader fr = new FileReader(matrizFile);
                 BufferedReader br = new BufferedReader(fr);
-                text = "";
-                while ((text = br.readLine()) != null) {
+                String linea;
+                while ((linea = br.readLine()) != null) {
                     int[] filaNumeros = null;
-                    String[] partes = text.split(" ");
-                    if (filaNumeros == null){
-                        filaNumeros =   new int[partes.length];
+                    String[] partes = linea.split(" ");
+                    if (filaNumeros == null) {
+                        filaNumeros = new int[partes.length];
                     }
-                    for(int j = 0; j < partes.length; j++){
-                        filaNumeros[j] = Integer.parseInt(partes[j]);
+                    for (int j = 0; j < partes.length; j++) {
+                        try {
+                            filaNumeros[j] = Integer.parseInt(partes[j]);
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(null, ex + "\n\nCargue de nuevo el archivo");
+                        }
+
                     }
                     lstFilas.add(filaNumeros);
                 }
-                
-                matriz =  new int[lstFilas.size()][lstFilas.get(0).length];
-                for(int i = 0; i < lstFilas.size();i++){
-                    System.arraycopy(lstFilas.get(i), 0, matriz[i], 0, lstFilas.get(i).length);
+                fr.close();
+                objMatriz1 = new int[lstFilas.size()][lstFilas.get(0).length];
+                for (int i = 0; i < lstFilas.size(); i++) {
+                    System.arraycopy(lstFilas.get(i), 0, objMatriz1[i], 0, lstFilas.get(i).length);
                 }
+                return objMatriz1;
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            } catch (IOException ex) {
+                Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
             }
-            return matriz;                
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (IOException ex) {
-            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
             return null;
         }
     }
-
-//    public boolean cargarTextoAMatriz(String CadenaTexto, Grafo objGrafo) throws IOException {
-//
-//        try {
-//            int[][] arrTemporal;
-//            ArrayList<int[]> ArrFilas = new ArrayList<>();
-//            String[] Filas = CadenaTexto.split("\n");
-//            int CantidadCol = -1;
-//            for (String Fila : Filas) {
-//                String[] Columnas = Fila.split(" ");
-//                CantidadCol = CantidadCol == -1 ? Columnas.length : CantidadCol;
-//                if (CantidadCol != Columnas.length) {
-//                    throw new IOException("Los datos ingresados no son correctos.");
-//                }
-//                int[] itemFila = new int[Columnas.length];
-//                for (int j = 0; j < Columnas.length; j++) {
-//                    itemFila[j] = Integer.parseInt(Columnas[j].trim());
-//                }
-//                ArrFilas.add(itemFila);
-//            }
-//
-//            //CIPIAR MATRIZ
-//            arrTemporal = new int[ArrFilas.size()][CantidadCol];
-//            for (int i = 0; i < ArrFilas.size(); i++) {
-//                System.arraycopy(ArrFilas.get(i), 0, arrTemporal[i], 0, CantidadCol);
-//            }
-//
-//            //CARGAR A VECTOR
-//            objGrafo.setVector(arrTemporal);
-//            return true;
-//        } catch (IOException ex) {
-//            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
-//            return false;
-//        }
-//    }
 }

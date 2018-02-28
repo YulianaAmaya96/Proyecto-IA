@@ -1,5 +1,7 @@
 package Model;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Yuliana Amaya
@@ -16,19 +18,20 @@ public class FactoriaBusqueda implements FactoriaMetodoBusqueda {
             case "Profundidad":
                 obj = new BusquedaProfundidad();
                 break;
-            case "AscensoColina":
+            case "Ascensoencolina": 
                 obj = new AscensoColina();
-                break;
+                break; 
             case "A*":
                 obj = new AAsterisco();
                 break;
-            case "RamificacionSin":
+            case "Ramificaciónyacotamiento":
                 obj = new RamifyAcota();
                 break;
-            case "RamificacionCon":
+            case "Ramificaciónyacotamientoconsubestimación":
                 obj = new RamifyAcota_Sub();
                 break;
             default:
+                JOptionPane.showMessageDialog(null, "Item incorrecto");
                 break;
         }
         return obj;

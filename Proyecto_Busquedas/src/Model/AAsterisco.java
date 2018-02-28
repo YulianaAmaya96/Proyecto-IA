@@ -29,7 +29,7 @@ public class AAsterisco extends Busqueda {
      * @return Indica si existe una trayectoria a un mismo nodo
      */
     private boolean existeTrayectoriaMismoNodo(ArrayList<Nodo> nodosSucesores) {
-        if (!this.abierto.isEmpty()) {
+        if (!this.abierto.isEmpty() && !nodosSucesores.isEmpty()) {
             for (int j = 0; nodosSucesores.size() >= j; j++) {
                 for (int i = 0; this.abierto.size() >= i; i++) {
                     return this.abierto.get(i).equals(nodosSucesores.get(j));
@@ -133,8 +133,4 @@ public class AAsterisco extends Busqueda {
         return ban;
     }
 
-    @Override
-    public int calcularInfo(Nodo ap) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

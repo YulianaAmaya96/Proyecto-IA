@@ -1,6 +1,5 @@
 package Model;
 
-import java.time.Clock;
 import java.util.ArrayList;
 
 /**
@@ -144,14 +143,15 @@ public abstract class Busqueda {
      * Metodo encargado de generar sucesores
      *
      * @param objNodo
+     * @param cerrados
+     * @param abiertos
      * @return
      */
     public ArrayList<Nodo> ObtenerSucesores(Nodo objNodo, ArrayList<Nodo> cerrados, ArrayList<Nodo> abiertos) {
         int fila = objNodo.getNodoVacionY();
         int columna = objNodo.getNodoVacionX();
-        ArrayList<Nodo> lstNodosSucesores = new ArrayList<>();
+        ArrayList<Nodo> lstNodosSucesores = new ArrayList();
         if (fila > 0) {
-
             boolean filaOrdenada = true;
             int indexfilaOrdenada = -1;
             for (int i = 0; i < objNodo.getEstado().length; i++) {
@@ -173,6 +173,7 @@ public abstract class Busqueda {
                 objNodoIzquierda.setNodoVacionX(fila - 1);
                 objNodoIzquierda.setNodoVacionY(columna);
                 if (!nodoExisteComoPadre(objNodoIzquierda) && !noEstaCerrado(objNodoIzquierda, cerrados) ) {
+                    objNodoIzquierda.setPadre(objNodo);
                     lstNodosSucesores.add(objNodoIzquierda);
                 }
             }
@@ -187,6 +188,7 @@ public abstract class Busqueda {
             objNodoDerecha.setNodoVacionX(fila);
             objNodoDerecha.setNodoVacionY(columna + 1);
             if (!nodoExisteComoPadre(objNodoDerecha) && !noEstaCerrado(objNodoDerecha, cerrados)) {
+                objNodoDerecha.setPadre(objNodo);
                 lstNodosSucesores.add(objNodoDerecha);
             }
         }
@@ -200,6 +202,7 @@ public abstract class Busqueda {
             objNodoDerecha.setNodoVacionX(fila + 1);
             objNodoDerecha.setNodoVacionY(columna);
             if (!nodoExisteComoPadre(objNodoDerecha) && !noEstaCerrado(objNodoDerecha, cerrados)) {
+                objNodoDerecha.setPadre(objNodo);
                 lstNodosSucesores.add(objNodoDerecha);
             }
         }
@@ -213,9 +216,17 @@ public abstract class Busqueda {
             objNodoSuperior.setNodoVacionX(fila);
             objNodoSuperior.setNodoVacionY(columna - 1);
             if (!nodoExisteComoPadre(objNodoSuperior)) {
+                objNodoSuperior.setPadre(objNodo);
                 lstNodosSucesores.add(objNodoSuperior);
             }
         }
+//        for (Nodo temp : lstNodosSucesores) { 
+//            System.out.println("Nodo nuevo");
+//            while(temp!=null){
+//                System.err.println(temp.getIdUnicoNodo());
+//                temp = temp.getPadre(); 
+//            }
+//        }
 
         return lstNodosSucesores;
     }
@@ -228,29 +239,8 @@ public abstract class Busqueda {
         return true;
     }
 
-    public void addSucesores() {
-        this.sucesores = new ArrayList();
-    }
-
-    public boolean obtenerSucesores(Nodo objActual, Nodo objNodoMeta) {
-        boolean ban = false;
-//        int p = this.getP(objActual);
-//        if (p >= 0) {
-//            int n = this.matriz[p].length;
-//            for (int i = objActual.getprofundidad(); i < n; i++) {
-//                char c = (char) ((char) 'A' + (char) i);
-//                if (this.matriz[p][i] == 1 && objNodoMeta.getDatos() != c) {
-//                    return true;
-//                }
-//            }
-//        }
-        return ban;
-    }
-
     public abstract boolean estaEnAbierto(Nodo nodo);
 
     public abstract Nodo metodoBusqueda();
-
-    public abstract int calcularInfo(Nodo ap);
 
 }
